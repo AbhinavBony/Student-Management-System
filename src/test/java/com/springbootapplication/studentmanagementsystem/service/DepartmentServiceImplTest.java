@@ -9,6 +9,7 @@ import com.springbootapplication.studentmanagementsystem.entity.Department;
 import com.springbootapplication.studentmanagementsystem.exception.DepartmentNotFound;
 import com.springbootapplication.studentmanagementsystem.exception.DuplicateDepartmentFound;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +35,7 @@ class DepartmentServiceImplTest {
         requestDTO.setDepartmentName("Computer Science");
     }
     @Test
+    @DisplayName("Adding Department Successfully")
     void addDepartment_shouldSaveAndReturn_successfully(){
         DepartmentResponseDTO saved = service.addDepartment(requestDTO);
 
@@ -41,6 +43,7 @@ class DepartmentServiceImplTest {
         assertEquals(requestDTO.getDepartmentName(), saved.getDepartmentName());
     }
     @Test
+    @DisplayName("Throw Exception When Add Duplicate Department")
     void addDepartment_shouldThrowException_whenDuplicateDepartment(){
         service.addDepartment(requestDTO);
 
@@ -50,6 +53,7 @@ class DepartmentServiceImplTest {
         assertThrows(DuplicateDepartmentFound.class, ()-> service.addDepartment(duplicate));
     }
     @Test
+    @DisplayName("Get All Departments List Successfully")
     void getAllDepartments(){
         DepartmentResponseDTO dep1 = service.addDepartment(requestDTO);
         DepartmentResponseDTO dep2 = service.addDepartment(new DepartmentRequestDTO("Information Technology"));
@@ -60,6 +64,7 @@ class DepartmentServiceImplTest {
         assertTrue(list.stream().anyMatch(d-> d.getDepartmentName().equals("Information Technology")));
     }
     @Test
+    @DisplayName("Get A Department By Passing Department Id Successfully")
     void getDepartment_whenExists(){
         DepartmentResponseDTO saved = service.addDepartment(requestDTO);
         DepartmentResponseDTO found = service.getDepartmentById(saved.getId());
@@ -68,10 +73,12 @@ class DepartmentServiceImplTest {
         assertEquals(saved.getDepartmentName(), found.getDepartmentName());
     }
     @Test
+    @DisplayName("Get Department Should Throw Exception When Not Found By Department ID")
     void getDepartment_shouldThrowsException_whenNotExists(){
         assertThrows(DepartmentNotFound.class, ()-> service.getDepartmentById(9999));
     }
     @Test
+    @DisplayName("Update Department Successfully When Found")
     void updateDepartment_whenFound(){
         DepartmentResponseDTO saved = service.addDepartment(requestDTO);
 
@@ -82,11 +89,13 @@ class DepartmentServiceImplTest {
         assertEquals(saved.getId(), updated.getId());
         assertEquals(updateDepartment.getDepartmentName(), updated.getDepartmentName());
     }
+    @DisplayName("Update Department Throw Exception When Not Found By ID")
     @Test
     void updateDepartment_shouldThrowException_whenDepartmentNotFound(){
         assertThrows(DepartmentNotFound.class, ()-> service.updateDepartment(9999, requestDTO));
     }
     @Test
+    @DisplayName("Delete Department Successfully By Department ID")
     void deleteDepartment_whenExists(){
         DepartmentResponseDTO saved = service.addDepartment(requestDTO);
         service.deleteDepartment(saved.getId());
@@ -94,10 +103,12 @@ class DepartmentServiceImplTest {
 
     }
     @Test
+    @DisplayName("Delete Department Should Throw Exception When Not Found By Department ID")
     void deleteDepartment_shouldThrowException_whenNotExists(){
         assertThrows(DepartmentNotFound.class, ()-> service.deleteDepartment(9999));
     }
     @Test
+    @DisplayName("Get Count Of Student By Passing Department Id Successfully")
     void getStudentCountByDepartmentId_whenStudentExistsWithDepartmentId(){
         DepartmentResponseDTO savedDepartment = service.addDepartment(requestDTO);
         studentService.addStudentByDepartment(new StudentRequestDTO(1514331002L,"Abhinav", "IMS", savedDepartment.getId()));
@@ -107,10 +118,12 @@ class DepartmentServiceImplTest {
         assertEquals(2, count.getStudentCount());
     }
     @Test
+    @DisplayName("Get Count Of Student Should Throw Exception When Department Id Not Exists")
     void getStudentCountByDepartmentId_shouldThrowException_whenDepartmentIdNotExists(){
         assertThrows(DepartmentNotFound.class, ()->  service.getStudentCountByDepartmentId(999));
     }
     @Test
+    @DisplayName("Get All Students Count Successfully By Department Id Passed")
     void getAllStudentCountByDepartment_whenStudentExistsByDepartment(){
         DepartmentResponseDTO department1= service.addDepartment(requestDTO);
         DepartmentResponseDTO department2 = service.addDepartment(new DepartmentRequestDTO("Information Technology"));
@@ -131,6 +144,7 @@ class DepartmentServiceImplTest {
         assertEquals(1, itCount.getStudentCount());
     }
     @Test
+    @DisplayName("Search By Department Name Found Successfully")
     void searchDepartmentName_whenExists(){
         DepartmentResponseDTO saved = service.addDepartment(requestDTO);
         DepartmentResponseDTO existsByName = service.searchByDepartmentName(saved.getDepartmentName());
@@ -138,10 +152,12 @@ class DepartmentServiceImplTest {
         assertEquals(saved.getDepartmentName(), existsByName.getDepartmentName());
     }
     @Test
+    @DisplayName("Search By Department Name Not Found")
     void searchDepartmentName_shouldThrowException_whenNotExists(){
         assertThrows(DepartmentNotFound.class, ()-> service.searchByDepartmentName("Information Technology"));
     }
     @Test
+    @DisplayName("Search Partial Name of Department")
     void searchDepartmentName_PartialSearchName(){
 
         DepartmentResponseDTO saved = service.addDepartment(requestDTO);
@@ -151,6 +167,7 @@ class DepartmentServiceImplTest {
         assertEquals(saved.getDepartmentName(), partialFound.getDepartmentName());
     }
     @Test
+    @DisplayName("Get Departments in Paginated Form")
     void getDepartmentsPaginated_shouldReturnCorrectPageSize_andTotalCounts() {
         for (int i = 1; i <= 5; i++) {
             service.addDepartment(new DepartmentRequestDTO("Department " + i));
@@ -166,6 +183,7 @@ class DepartmentServiceImplTest {
     }
 
     @Test
+    @DisplayName("Get Departments on Last Page")
     void getDepartmentsPaginated_shouldReturnRemainingItems_onLastPage() {
         for (int i = 1; i <= 5; i++) {
             service.addDepartment(new DepartmentRequestDTO("Department " + i));
@@ -178,6 +196,7 @@ class DepartmentServiceImplTest {
     }
 
     @Test
+    @DisplayName("Should Return Empty Page When No Department Exists")
     void getDepartmentsPaginated_shouldReturnEmptyPage_whenNoDepartmentsExist() {
         Page<DepartmentResponseDTO> page = service.getDepartmentsPaginated(0, 5);
 
@@ -185,6 +204,7 @@ class DepartmentServiceImplTest {
         assertEquals(0, page.getTotalElements());
     }
     @Test
+    @DisplayName("Get All Departments In Sorted Ascending Order ")
     void getAllDepartmentsSorted_shouldReturnInAscendingOrder_byDepartmentName(){
         service.addDepartment(new DepartmentRequestDTO("Electrical"));
         service.addDepartment(new DepartmentRequestDTO("Biotechnology"));
@@ -198,6 +218,7 @@ class DepartmentServiceImplTest {
         assertEquals("Electrical", ascendingList.get(2).getDepartmentName());
     }
     @Test
+    @DisplayName("Get All Departments In Sorted Descending Order ")
     void getAllDepartmentsSorted_shouldReturnInDescendingOrder_byDepartmentName(){
         service.addDepartment(new DepartmentRequestDTO("Electrical"));
         service.addDepartment(new DepartmentRequestDTO("Biotechnology"));
